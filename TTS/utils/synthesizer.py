@@ -118,17 +118,18 @@ class Synthesizer(object):
         """Initialize the SpeakerManager"""
         # setup if multi-speaker settings are in the global model config
         speaker_manager = None
-        if hasattr(self.tts_config, "use_speaker_embedding") and self.tts_config.use_speaker_embedding is True:
-            if self.tts_speakers_file:
-                speaker_manager = SpeakerManager(speaker_id_file_path=self.tts_speakers_file)
-            if self.tts_config.get("speakers_file", None):
-                speaker_manager = SpeakerManager(speaker_id_file_path=self.tts_config.speakers_file)
+        speaker_manager = SpeakerManager(speaker_id_file_path=self.tts_speakers_file)
+        # if hasattr(self.tts_config, "use_speaker_embedding") and self.tts_config.use_speaker_embedding is True:
+        #     if self.tts_speakers_file:
+        #         speaker_manager = SpeakerManager(speaker_id_file_path=self.tts_speakers_file)
+        #     if self.tts_config.get("speakers_file", None):
+        #         speaker_manager = SpeakerManager(speaker_id_file_path=self.tts_config.speakers_file)
 
-        if hasattr(self.tts_config, "use_d_vector_file") and self.tts_config.use_speaker_embedding is True:
-            if self.tts_speakers_file:
-                speaker_manager = SpeakerManager(d_vectors_file_path=self.tts_speakers_file)
-            if self.tts_config.get("d_vector_file", None):
-                speaker_manager = SpeakerManager(d_vectors_file_path=self.tts_config.d_vector_file)
+        # if hasattr(self.tts_config, "use_d_vector_file") and self.tts_config.use_speaker_embedding is True:
+        #     if self.tts_speakers_file:
+        #         speaker_manager = SpeakerManager(d_vectors_file_path=self.tts_speakers_file)
+        #     if self.tts_config.get("d_vector_file", None):
+        #         speaker_manager = SpeakerManager(d_vectors_file_path=self.tts_config.d_vector_file)
         return speaker_manager
 
     def _load_vocoder(self, model_file: str, model_config: str, use_cuda: bool) -> None:
