@@ -53,6 +53,7 @@ for idx, wav_file in enumerate(tqdm(wav_files)):
         speaker_name = None
 
     # extract the embedding
+    print(wav_file)
     embedd = speaker_manager.compute_d_vector_from_clip(wav_file)
 
     # create speaker_mapping if target dataset is defined

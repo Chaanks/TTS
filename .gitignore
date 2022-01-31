@@ -125,11 +125,18 @@ version.py
 core
 
 # ignore local datasets
+utils/pretrained_models/
+utils/*.json
 recipes/WIP/*
 recipes/ljspeech/LJSpeech-1.1/*
 recipes/vctk/VCTK/*
+recipes/vctk/VCTK_22K/*
+recipes/vctk/VCTK_5S_22K/*
+recipes/vctk/VCTK/*
 recipes/**/*.npy
 recipes/**/*.json
+recipes/**/phoneme_cache/
+recipes/**/coqui_tts-*/
 VCTK-Corpus-removed-silence/*
 
 # ignore training logs

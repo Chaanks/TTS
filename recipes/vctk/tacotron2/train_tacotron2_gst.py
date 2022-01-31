@@ -2,7 +2,7 @@ import os
 
 from TTS.config.shared_configs import BaseAudioConfig
 from TTS.trainer import Trainer, TrainingArgs
-from TTS.tts.configs.shared_configs import BaseDatasetConfig
+from TTS.tts.configs.shared_configs import BaseDatasetConfig, GSTConfig
 from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.datasets import load_tts_samples
 from TTS.tts.models.tacotron2 import Tacotron2
@@ -10,7 +10,7 @@ from TTS.tts.utils.speakers import SpeakerManager
 from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
-dataset_config = BaseDatasetConfig(name="vctk", meta_file_train=["p225", "p234", "p238", "p245", "p248"], ignored_speakers=["362"], path=os.path.join(output_path, "../VCTK_22K/"))
+dataset_config = BaseDatasetConfig(name="vctk", meta_file_train="", path=os.path.join(output_path, "../VCTK_5S_22K/"))
 
 audio_config = BaseAudioConfig(
     sample_rate=22050,
@@ -23,6 +23,15 @@ audio_config = BaseAudioConfig(
     spec_gain=1.0,
     log_func="np.log",
     preemphasis=0.0,
+)
+
+gst_config = GSTConfig(
+    gst_style_input_wav = None,
+    gst_style_input_weights = None,
+    gst_embedding_dim = 256,
+    gst_use_speaker_embedding = False,
+    gst_num_heads = 4,
+    gst_num_style_tokens = 10,
 )
 
 config = Tacotron2Config(  # This is the config that is saved for the future use
@@ -58,6 +67,9 @@ config = Tacotron2Config(  # This is the config that is saved for the future use
     optimizer="Adam",
     lr_scheduler=None,
     lr=3e-5,
+    use_gst = True,
+    gst = gst_config,
+    gst_style_input = None,
 )
 
 # init audio processor
