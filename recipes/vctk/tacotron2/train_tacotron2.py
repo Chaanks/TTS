@@ -27,13 +27,13 @@ audio_config = BaseAudioConfig(
 
 config = Tacotron2Config(  # This is the config that is saved for the future use
     audio=audio_config,
-    batch_size=16,
+    batch_size=32,
     eval_batch_size=16,
     num_loader_workers=4,
     num_eval_loader_workers=4,
     run_eval=True,
     test_delay_epochs=-1,
-    r=2,
+    r=4,
     # gradual_training=[[0, 6, 48], [10000, 4, 32], [50000, 3, 32], [100000, 2, 32]],
     double_decoder_consistency=False,
     epochs=1000,
@@ -43,7 +43,7 @@ config = Tacotron2Config(  # This is the config that is saved for the future use
     phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     print_step=150,
     print_eval=False,
-    mixed_precision=True,
+    mixed_precision=False,
     sort_by_audio_len=True,
     min_seq_len=14800,
     max_seq_len=22050 * 10,  # 44k is the original sampling rate before resampling, corresponds to 10 seconds of audio
@@ -58,6 +58,9 @@ config = Tacotron2Config(  # This is the config that is saved for the future use
     optimizer="Adam",
     lr_scheduler=None,
     lr=3e-5,
+
+    # Additional 
+    ga_alpha = 0.1
 )
 
 # init audio processor

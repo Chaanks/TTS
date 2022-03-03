@@ -2,7 +2,7 @@ import os
 
 from TTS.config.shared_configs import BaseAudioConfig
 from TTS.trainer import Trainer, TrainingArgs
-from TTS.tts.configs.shared_configs import BaseDatasetConfig
+from TTS.tts.configs.shared_configs import BaseDatasetConfig, GSTConfig
 from TTS.tts.configs.tacotron2_config import Tacotron2Config
 from TTS.tts.datasets import load_tts_samples
 from TTS.tts.models.tacotron2 import Tacotron2
@@ -25,17 +25,26 @@ audio_config = BaseAudioConfig(
     preemphasis=0.0,
 )
 
+gst_config = GSTConfig(
+    gst_style_input_wav = None,
+    gst_style_input_weights = None,
+    gst_embedding_dim = 256,
+    gst_use_speaker_embedding = False,
+    gst_num_heads = 4,
+    gst_num_style_tokens = 10,
+)
+
 config = Tacotron2Config(  # This is the config that is saved for the future use
     audio=audio_config,
-    batch_size=10,
+    batch_size=32,
     eval_batch_size=16,
-    num_loader_workers=4,
+    num_loader_workers=8,
     num_eval_loader_workers=4,
     run_eval=True,
     test_delay_epochs=-1,
-    r=2,
+    r=4,
     # gradual_training=[[0, 6, 48], [10000, 4, 32], [50000, 3, 32], [100000, 2, 32]],
-    double_decoder_consistency=False,
+    double_decoder_consistency=True,
     epochs=1000,
     text_cleaner="phoneme_cleaners",
     use_phonemes=True,
@@ -43,7 +52,7 @@ config = Tacotron2Config(  # This is the config that is saved for the future use
     phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     print_step=150,
     print_eval=False,
-    mixed_precision=True,
+    mixed_precision=False,
     sort_by_audio_len=True,
     min_seq_len=14800,
     max_seq_len=22050 * 10,  # 44k is the original sampling rate before resampling, corresponds to 10 seconds of audio
@@ -58,6 +67,9 @@ config = Tacotron2Config(  # This is the config that is saved for the future use
     optimizer="Adam",
     lr_scheduler=None,
     lr=3e-5,
+    use_gst = True,
+    gst = gst_config,
+    gst_style_input = None,
 )
 
 # init audio processor
@@ -68,7 +80,7 @@ train_samples, eval_samples = load_tts_samples(dataset_config, eval_split=True)
 
 # init speaker manager for multi-speaker training
 # it mainly handles speaker-id to speaker-name for the model and the data-loader
-speaker_manager = SpeakerManager(d_vectors_file_path=os.path.join(output_path, "speakers.json"))
+speaker_manager = SpeakerManager()
 speaker_manager.set_speaker_ids_from_data(train_samples + eval_samples)
 
 # init model

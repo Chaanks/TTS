@@ -10,11 +10,11 @@ from TTS.tts.utils.speakers import SpeakerManager
 from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
-dataset_config = BaseDatasetConfig(name="vctk", meta_file_train="", path=os.path.join(output_path, "../VCTK/"))
+dataset_config = BaseDatasetConfig(name="vctk", meta_file_train=["p225", "p234", "p238", "p245", "p248"], ignored_speakers=["362"], path=os.path.join(output_path, "../VCTK_22K/"))
 
 audio_config = BaseAudioConfig(
     sample_rate=22050,
-    resample=True,  # Resample to 22050 Hz. It slows down training. Use `TTS/bin/resample.py` to pre-resample and set this False for faster training.
+    resample=False,  # Resample to 22050 Hz. It slows down training. Use `TTS/bin/resample.py` to pre-resample and set this False for faster training.
     do_trim_silence=True,
     trim_db=23.0,
     signal_norm=False,
@@ -30,11 +30,11 @@ config = TacotronConfig(  # This is the config that is saved for the future use
     audio=audio_config,
     batch_size=48,
     eval_batch_size=16,
-    num_loader_workers=4,
+    num_loader_workers=8,
     num_eval_loader_workers=4,
     run_eval=True,
     test_delay_epochs=-1,
-    r=6,
+    r=4,
     gradual_training=[[0, 6, 48], [10000, 4, 32], [50000, 3, 32], [100000, 2, 32]],
     double_decoder_consistency=True,
     epochs=1000,
@@ -44,7 +44,7 @@ config = TacotronConfig(  # This is the config that is saved for the future use
     phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     print_step=25,
     print_eval=False,
-    mixed_precision=True,
+    mixed_precision=False,
     sort_by_audio_len=True,
     min_seq_len=0,
     max_seq_len=44000 * 10,  # 44k is the original sampling rate before resampling, corresponds to 10 seconds of audio

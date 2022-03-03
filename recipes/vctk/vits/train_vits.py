@@ -11,7 +11,7 @@ from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    name="vctk", meta_file_train="", language="en-us", path=os.path.join(output_path, "../VCTK/")
+    name="vctk", meta_file_train=["p225", "p234", "p238", "p245", "p248"], ignored_speakers=["362"], path=os.path.join(output_path, "../VCTK_22K/")
 )
 
 
@@ -35,13 +35,14 @@ audio_config = BaseAudioConfig(
 
 vitsArgs = VitsArgs(
     use_speaker_embedding=True,
+    speakers_file=os.path.join(output_path, "speakers.json"),
 )
 
 config = VitsConfig(
     model_args=vitsArgs,
     audio=audio_config,
     run_name="vits_vctk",
-    batch_size=32,
+    batch_size=64,
     eval_batch_size=16,
     batch_group_size=5,
     num_loader_workers=4,
@@ -51,6 +52,7 @@ config = VitsConfig(
     epochs=1000,
     text_cleaner="english_cleaners",
     use_phonemes=True,
+    phoneme_language="en-us",
     phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     compute_input_seq_cache=True,
     print_step=25,
@@ -71,7 +73,7 @@ train_samples, eval_samples = load_tts_samples(dataset_config, eval_split=True)
 
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
-speaker_manager = SpeakerManager()
+speaker_manager = SpeakerManager(d_vectors_file_path=os.path.join(output_path, "speakers.json"))
 speaker_manager.set_speaker_ids_from_data(train_samples + eval_samples)
 config.model_args.num_speakers = speaker_manager.num_speakers
 
