@@ -34,7 +34,12 @@ audio_config = BaseAudioConfig(
 )
 
 vitsArgs = VitsArgs(
-    use_speaker_embedding=True,
+    #use_speaker_embedding=True,
+    #speaker_embedding_channels=192,
+    #speakers_file=os.path.join(output_path, "speakers.json"),
+    use_d_vector_file=True,
+    d_vector_file=os.path.join(output_path, "speakers.json"),
+    d_vector_dim=192,
 )
 
 config = VitsConfig(
@@ -72,9 +77,10 @@ train_samples, eval_samples = load_tts_samples(dataset_config, eval_split=True)
 
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
-speaker_manager = SpeakerManager()
+speaker_manager = SpeakerManager(d_vectors_file_path=os.path.join(output_path, "speakers.json"))
 speaker_manager.set_speaker_ids_from_data(train_samples + eval_samples)
 config.model_args.num_speakers = speaker_manager.num_speakers
+print(f"Number of speakers: {config.model_args.num_speakers}")
 
 # init model
 model = Vits(config, speaker_manager)
