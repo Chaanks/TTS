@@ -11,7 +11,7 @@ from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    name="vctk", meta_file_train="", ignored_speakers=["225", "226", "227", "228", "362"], path=os.path.join(output_path, "../VCTK")
+    name="vctk", meta_file_train="", ignored_speakers=["225", "226", "227", "228", "362"], path="/gpfsscratch/rech/vfw/uur64jb/corpus/VCTK_22k"
 )
 
 
