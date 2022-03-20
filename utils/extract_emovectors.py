@@ -37,7 +37,7 @@ if __name__ == "__main__":
     print(f"Found {len(audio_files)} files...")
 
     spk_embs = {}
-    classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-ecapa-voxceleb", run_opts={"device":"cuda"})
+    classifier = EncoderClassifier.from_hparams(source="/local_disk/calypso/jduret/git/Chaanks/sb-interfaces/emotion_v2", run_opts={"device":"cuda"})
     
     for audio in tqdm(audio_files):
         spk_name, filename = audio.split('/')[-2:]
@@ -51,5 +51,5 @@ if __name__ == "__main__":
             "embedding": embedding
         }
     
-    with open(output_dir / "speakers_xvectors.json", 'w') as f:
+    with open(output_dir / "speakers_emovectors.json", 'w') as f:
         json.dump(spk_embs, f)
