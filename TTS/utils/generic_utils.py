@@ -29,6 +29,7 @@ def get_cuda():
 
 
 def get_git_branch():
+    return "None"
     try:
         out = subprocess.check_output(["git", "branch"]).decode("utf8")
         current = next(line for line in out.split("\n") if line.startswith("*"))
@@ -41,6 +42,7 @@ def get_git_branch():
 
 
 def get_commit_hash():
+    return "00000000"
     """https://stackoverflow.com/questions/14989858/get-the-current-git-hash-in-a-python-script"""
     # try:
     #     subprocess.check_output(['git', 'diff-index', '--quiet',

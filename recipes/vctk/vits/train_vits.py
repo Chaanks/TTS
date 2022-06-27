@@ -11,7 +11,7 @@ from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    name="vctk", meta_file_train="", ignored_speakers=["225", "226", "227", "228", "362"], path="/gpfsscratch/rech/vfw/uur64jb/corpus/VCTK_22k"
+    name="vctk", meta_file_train="", ignored_speakers=["p225", "p226", "p227", "p228", "p362","p280"], path="/gpfsscratch/rech/vfw/uur64jb/corpus/VCTK_22k"
 )
 
 
@@ -41,7 +41,7 @@ config = VitsConfig(
     model_args=vitsArgs,
     audio=audio_config,
     run_name="vits_vctk",
-    batch_size=64,
+    batch_size=32,
     eval_batch_size=16,
     batch_group_size=5,
     num_loader_workers=4,
@@ -62,6 +62,8 @@ config = VitsConfig(
     max_seq_len=1500000,
     output_path=output_path,
     datasets=[dataset_config],
+    #distributed_backend="nccl",
+    #distributed_url="env://"
 )
 
 # init audio processor
