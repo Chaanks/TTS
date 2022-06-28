@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --array=0-10%1
-#SBATCH -A vfw@gpu
+#SBATCH -A vfw@v100
 #SBATCH --ntasks=1                   # number of MP tasks
 #SBATCH --ntasks-per-node=1          # number of MPI tasks per node
 #SBATCH --gres=gpu:1                 # number of GPUs per node
@@ -25,7 +25,7 @@ cp ${SLURM_SUBMIT_DIR}/$1 ${SCRATCH_DIRECTORY}
 module purge
 module load anaconda-py3/2021.05
 
-conda activate parrot
+conda activate coqui
 echo "Make sure pytorch is installed:"
 python -c "import torch; print(f'torch version: {torch.__version__}')"
 
