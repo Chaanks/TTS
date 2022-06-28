@@ -25,7 +25,7 @@ cp ${SLURM_SUBMIT_DIR}/$1 ${SCRATCH_DIRECTORY}
 module purge
 module load anaconda-py3/2021.05
 
-conda activate coqui
+conda activate parrot
 echo "Make sure pytorch is installed:"
 python -c "import torch; print(f'torch version: {torch.__version__}')"
 

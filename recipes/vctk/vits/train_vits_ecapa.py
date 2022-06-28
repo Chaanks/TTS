@@ -36,7 +36,10 @@ audio_config = BaseAudioConfig(
 )
 
 vitsArgs = VitsArgs(
-    use_speaker_embedding=True,
+    #use_speaker_embedding=True,
+    use_d_vector_file=True,
+    d_vector_file="/gpfswork/rech/vfw/uur64jb/git/Chaanks/embs/v2/vctk_xvectors_ecapa_sb_192.json",
+    d_vector_dim=192,
 )
 
 config = VitsConfig(
@@ -88,9 +91,10 @@ train_samples, eval_samples = load_tts_samples(
 
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
-speaker_manager = SpeakerManager()
-speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speaker_name")
+speaker_manager = SpeakerManager(d_vectors_file_path="/gpfswork/rech/vfw/uur64jb/git/Chaanks/embs/v2/vctk_xvectors_ecapa_sb_192.json")
+speaker_manager.set_speaker_ids_from_data(train_samples + eval_samples)
 config.model_args.num_speakers = speaker_manager.num_speakers
+print(f"Number of speakers: {config.model_args.num_speakers}")
 
 # init model
 model = Vits(config, ap, tokenizer, speaker_manager)

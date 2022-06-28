@@ -1,18 +1,21 @@
 import os
 
+from trainer import Trainer, TrainerArgs
+
 from TTS.config.shared_configs import BaseAudioConfig
-from TTS.trainer import Trainer, TrainingArgs
 from TTS.tts.configs.shared_configs import BaseDatasetConfig
 from TTS.tts.configs.vits_config import VitsConfig
 from TTS.tts.datasets import load_tts_samples
 from TTS.tts.models.vits import Vits, VitsArgs
 from TTS.tts.utils.speakers import SpeakerManager
+from TTS.tts.utils.text.tokenizer import TTSTokenizer
 from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    name="vctk", meta_file_train="", ignored_speakers=["p225", "p226", "p227", "p228", "p362", "p280"], path="/gpfsscratch/rech/vfw/uur64jb/corpus/VCTK_22k"
+    name="vctk", meta_file_train="", ignored_speakers=["p225", "p226", "p227", "p228", "p362", "p280"], language="en-us", path="/gpfsscratch/rech/vfw/uur64jb/corpus/VCTK_22k"
 )
+
 
 audio_config = BaseAudioConfig(
     sample_rate=22050,
@@ -34,10 +37,8 @@ audio_config = BaseAudioConfig(
 
 vitsArgs = VitsArgs(
     #use_speaker_embedding=True,
-    #speaker_embedding_channels=192,
-    #speakers_file=os.path.join(output_path, "speakers.json"),
     use_d_vector_file=True,
-    d_vector_file="/gpfsdswork/projects/rech/vfw/uur64jb/git/Chaanks/TTS/recipes/vctk/vits/speakers_emovectors.json",
+    d_vector_file="/gpfswork/rech/vfw/uur64jb/git/Chaanks/embs/v2/vctk_emovectors_ecapa_sb_96.json",
     d_vector_dim=96,
 )
 
@@ -55,43 +56,56 @@ config = VitsConfig(
     epochs=1000,
     text_cleaner="english_cleaners",
     use_phonemes=True,
-    phoneme_language="en-us",
+    phoneme_language="en",
     phoneme_cache_path=os.path.join(output_path, "phoneme_cache"),
     compute_input_seq_cache=True,
     print_step=25,
     print_eval=False,
     mixed_precision=True,
-    sort_by_audio_len=True,
-    min_seq_len=32 * 256 * 4,
-    max_seq_len=1500000,
+    max_text_len=325,  # change this if you have a larger VRAM than 16GB
     output_path=output_path,
     datasets=[dataset_config],
 )
 
-# init audio processor
-ap = AudioProcessor(**config.audio.to_dict())
+# INITIALIZE THE AUDIO PROCESSOR
+# Audio processor is used for feature extraction and audio I/O.
+# It mainly serves to the dataloader and the training loggers.
+ap = AudioProcessor.init_from_config(config)
 
-# load training samples
-train_samples, eval_samples = load_tts_samples(dataset_config, eval_split=True)
+# INITIALIZE THE TOKENIZER
+# Tokenizer is used to convert text to sequences of token IDs.
+# config is updated with the default characters if not defined in the config.
+tokenizer, config = TTSTokenizer.init_from_config(config)
+
+# LOAD DATA SAMPLES
+# Each sample is a list of ```[text, audio_file_path, speaker_name]```
+# You can define your custom sample loader returning the list of samples.
+# Or define your custom formatter and pass it to the `load_tts_samples`.
+# Check `TTS.tts.datasets.load_tts_samples` for more details.
+train_samples, eval_samples = load_tts_samples(
+    dataset_config,
+    eval_split=True,
+    eval_split_max_size=config.eval_split_max_size,
+    eval_split_size=config.eval_split_size,
+)
 
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
-speaker_manager = SpeakerManager(d_vectors_file_path="/gpfsdswork/projects/rech/vfw/uur64jb/git/Chaanks/TTS/recipes/vctk/vits/speakers_emovectors.json")
+speaker_manager = SpeakerManager(d_vectors_file_path="/gpfswork/rech/vfw/uur64jb/git/Chaanks/embs/v2/vctk_emovectors_ecapa_sb_96.json")
 speaker_manager.set_speaker_ids_from_data(train_samples + eval_samples)
 config.model_args.num_speakers = speaker_manager.num_speakers
 print(f"Number of speakers: {config.model_args.num_speakers}")
 
 # init model
-model = Vits(config, speaker_manager)
+model = Vits(config, ap, tokenizer, speaker_manager)
 
 # init the trainer and 🚀
 trainer = Trainer(
-    TrainingArgs(),
+    TrainerArgs(),
     config,
     output_path,
     model=model,
     train_samples=train_samples,
     eval_samples=eval_samples,
-    training_assets={"audio_processor": ap},
 )
 trainer.fit()
