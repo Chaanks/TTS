@@ -13,7 +13,7 @@ from TTS.utils.audio import AudioProcessor
 
 output_path = os.path.dirname(os.path.abspath(__file__))
 dataset_config = BaseDatasetConfig(
-    name="vctk", meta_file_train="", ignored_speakers=["p225", "p226", "p227", "p228", "p362", "p280"], language="en-us", path="/gpfsscratch/rech/vfw/uur64jb/corpus/VCTK_22k"
+    name="vctk", meta_file_train="", ignored_speakers=["p225", "p226", "p227", "p228", "p362", "p280"], language="en-us", path="/gpfsscratch/rech/vfw/uur64jb/corpus/VCTK_22K"
 )
 
 
@@ -92,7 +92,7 @@ train_samples, eval_samples = load_tts_samples(
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager(d_vectors_file_path="/gpfswork/rech/vfw/uur64jb/git/Chaanks/embs/v2/vctk_xvectors_ecapa_sb_192.json")
-speaker_manager.set_speaker_ids_from_data(train_samples + eval_samples)
+speaker_manager.set_ids_from_data(train_samples + eval_samples)
 config.model_args.num_speakers = speaker_manager.num_speakers
 print(f"Number of speakers: {config.model_args.num_speakers}")
 
