@@ -92,7 +92,7 @@ train_samples, eval_samples = load_tts_samples(
 # init speaker manager for multi-speaker training
 # it maps speaker-id to speaker-name in the model and data-loader
 speaker_manager = SpeakerManager(d_vectors_file_path="/gpfswork/rech/vfw/uur64jb/git/Chaanks/embs/v2/vctk_emovectors_ecapa_sb_96.json")
-speaker_manager.set_ids_from_data(train_samples + eval_samples)
+speaker_manager.set_ids_from_data(train_samples + eval_samples, parse_key="speaker_name")
 config.model_args.num_speakers = speaker_manager.num_speakers
 print(f"Number of speakers: {config.model_args.num_speakers}")
 
