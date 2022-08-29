@@ -123,6 +123,20 @@ def ljspeech(root_path, meta_file, **kwargs):  # pylint: disable=unused-argument
     return items
 
 
+def dwbrasil(root_path, meta_file, **kwargs):
+    """Normalizes the DW Brasil meta data file to TTS format"""
+    txt_file = os.path.join(root_path, meta_file)
+    items = []
+    with open(txt_file, "r", encoding="utf-8") as ttf:
+        for line in ttf:
+            cols = line.split("|")
+            wav_file = os.path.join(root_path, "wavs", cols[0] + ".wav")
+            text = cols[3]
+            speaker_name = cols[1]
+            items.append([text, wav_file, speaker_name])
+    return items
+
+
 def ljspeech_test(root_path, meta_file, **kwargs):  # pylint: disable=unused-argument
     """Normalizes the LJSpeech meta data file for TTS testing
     https://keithito.com/LJ-Speech-Dataset/"""
