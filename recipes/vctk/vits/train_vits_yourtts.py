@@ -68,15 +68,11 @@ config = VitsConfig(
     test_sentences=[
         [
             "It took me quite a long time to develop a voice, and now that I have it I'm not going to be silent.",
-            "VCTK_p225",
-            None,
-            "en"
+            "p225"
         ],
         [
             "It took me quite a long time to develop a voice, and now that I have it I'm not going to be silent.",
-            "VCTK_p226",
-            None,
-            "en"
+            "p226"
         ],
     ]
 )
